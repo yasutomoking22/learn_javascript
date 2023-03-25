@@ -1,125 +1,92 @@
-// let
-// letは上書可能、再宣言不可能
-let var1 = "初期値は1";
-var1 = "2に変更";
-console.log(var1);
+import "./styles.css";
 
-// const
-// constは上書不可、オブジェクトのみ上書可能
-const var2 = {
-  name: "初期値",
-  value: 1
-};
-var2.value = 2;
-console.log(var2);
-const var3 = ["cat", "dog"];
-var3.push("monkey");
-console.log(var3);
-
-/* テンプレート文字列
-文字列内でJSの変数を展開する方法
- */
-const name = "ben";
-const age = 20;
-const msg_temp = `私の名前は${name}です。年齢は${age}です。`;
-console.log(msg_temp);
-
-/* 
-アロー関数
+/* 追加ボタンが押された時の処理
+1, 入力値を取得
+2, タスクを作成するためのDIV, liタグを生成
+3, liタグ内に入力値を文字列として書き出す
+4, divタグを未完了TODOのulに追加
 */
-// 従来の関数
-function func1(str) {
-  return str;
-}
-console.log(func1("従来です"));
-const func2 = (str) => {
-  return str;
+const onClickAdd = () => {
+  // 入力値を取得
+  const inputText = document.getElementById("add-input").value;
+  document.getElementById("add-input").value = ""; //初期化
+
+  createImcompletedList(inputText);
 };
-console.log(func2("アロー１です"));
-const func3 = (num1, num2) => num1 + num2; // 1行で処理が完結する場合の書き方
-console.log(func3("アロー", "２です"));
 
-/* 分割代入
-オブジェクトから指定のプロパティを取り出して使う
-コードが見やすくなる
- */
-const myProfile = {
-  my_name: "love",
-  my_age: 29
+// 未完了リストから指定の要素を削除する関数
+const deleteFromImcompletedList = (target) => {
+  document.getElementById("imcompleted-list").removeChild(target);
 };
-const { my_name, my_age } = myProfile;
-console.log(`私は${my_name}です。年齢は${my_age}です。`);
 
-const myProfile2 = ["love", 29];
-const [my_name2, my_age2] = myProfile2;
-console.log(`私は${my_name2}です。年齢は${my_age2}です。`);
+// 未完了リストを作製する関数
+const createImcompletedList = (inputText) => {
+  // TODOタスクの一覧を生成(DOMを生成して差し込む)
+  // divタグ生成
+  const div = document.createElement("div");
+  div.className = "list-row";
 
-/* デフォルト引数
- */
-const sayHello = (name = "ゲスト") => console.log(`こんにちは ${name}さん`);
-sayHello();
+  // ilタグ生成(タスクを追加)
+  const li = document.createElement("li");
+  li.innerText = inputText;
+  console.log(li);
 
-/* スプレッド構文
-配列の中身を順番に処理して展開する
- */
-// 配列の展開
-const arr1 = [1, 2, 3];
-console.log(...arr1);
-const sumFunc = (n1, n2, n3) => console.log(n1 + n2 + n3);
-sumFunc(arr1[0], arr1[1], arr1[2]);
-sumFunc(...arr1);
+  // ボタンタグの追加処理(完了)
+  const compltetedButton = document.createElement("button");
+  compltetedButton.innerText = "完了";
 
-//配列を分割し再代入
-const arr2 = [1, 2, 3, 4];
-const [num1, num2, ...arr3] = arr2;
-console.log(arr3); //配列が返る
+  // 完了ボタンが押された時の処理
+  compltetedButton.addEventListener("click", () => {
+    // divタグの削除
+    deleteFromImcompletedList(compltetedButton.parentNode); //親のdivタグを渡す
 
-// 配列の結合(値渡し)
-const arr4 = [...arr1, ...arr2];
-console.log(arr4);
+    // ulタグ内のテキスト抽出
+    const addTargetParent = compltetedButton.parentNode;
+    const text = addTargetParent.firstElementChild.innerText;
+    // divタグ内を初期化
+    addTargetParent.textContent = null;
 
-/* mapやfilterを用いた配列処理
- */
-const nameArr = ["tanaka", "sato", "yamada"];
-for (let i = 0; i < nameArr.length; i++) {
-  console.log(nameArr[i]);
-}
-nameArr.map((name) => console.log(name)); //配列を順番に処理
-// 条件に一致する要素を返す
-const x1 = nameArr.filter((name) => {
-  return name === "yamada";
-});
-console.log(x1);
+    // liタグ生成
+    const li = document.createElement("li");
+    li.innerText = text;
 
-const newNameArr = nameArr.map((name) => {
-  if (name === "yamada") {
-    return "山田さん";
-  } else {
-    return `${name}さん`;
-  }
-});
-console.log(newNameArr);
+    // 戻すボタン生成
+    const backButton = document.createElement("button");
+    backButton.innerText = "戻す";
+    backButton.addEventListener("click", () => {
+      const deleteTarget = backButton.parentNode;
+      document.getElementById("completed-list").removeChild(deleteTarget);
 
-/* 三項演算子：　if elseを一行で記述する方法
-条件 ? true時の処理 : false時の処理
- */
-const var10 = 1 < 0 ? "trueです" : "falseです";
-console.log(var10);
+      // 戻すテキスト抽出し、未完了タスクの再生成
+      const text = deleteTarget.firstElementChild.innerText;
+      createImcompletedList(text);
+    });
 
-const num10 = "1300";
-const formattedNum =
-  typeof num10 === "number" ? num10.toLocaleString() : "数値でないです";
-console.log(formattedNum);
+    // divタグ内を再生成し、完了リストに追加
+    addTargetParent.appendChild(li);
+    addTargetParent.appendChild(backButton);
+    document.getElementById("completed-list").appendChild(addTargetParent);
+    console.log(addTargetParent);
+  });
 
-/* 三香演算子の意味 && ||
-|| は左がfalseの場合は右側を返す
-JSはNULLはfalse
-&& は左側がtrueなら右を返す
- */
-const num11 = null;
-const fee = num11 || "金額未設定";
-console.log(fee);
+  // ボタンタグの追加処理(削除)
+  const deleteButton = document.createElement("button");
+  deleteButton.innerText = "削除";
+  // ボタンタグを削除
+  deleteButton.addEventListener("click", () => {
+    deleteFromImcompletedList(deleteButton.parentNode); //親のdivタグを渡す
+  });
 
-const num12 = null;
-const fee2 = num12 && "何か設定あり";
-console.log(fee2);
+  // divタグの子要素に各要素を追加(下に順に追加)
+  div.appendChild(li);
+  div.appendChild(compltetedButton);
+  div.appendChild(deleteButton);
+  console.log(div);
+
+  document.getElementById("imcompleted-list").appendChild(div);
+};
+
+// 追加ボタンが押された時、未完了のTODO登録
+document
+  .getElementById("add-button")
+  .addEventListener("click", () => onClickAdd());
