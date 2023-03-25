@@ -261,7 +261,7 @@ var createImcompletedList = function createImcompletedList(inputText) {
   document.getElementById("imcompleted-list").appendChild(div);
 };
 
-// 追加ボタンが押された時、未完了のTODO登録
+// 追加ボタンが押されたら走るメインの処理
 document.getElementById("add-button").addEventListener("click", function () {
   return onClickAdd();
 });
